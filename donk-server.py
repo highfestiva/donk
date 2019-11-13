@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
-import os
 from flask import Flask, request
+from functools import partial
+import os
+from threading import Thread
 
 
 app = Flask(__name__)
@@ -14,10 +16,11 @@ def analyze(target):
         print(target)
         tdir = target.replace('.tar.gz', '')
         os.system('mkdir '+tdir)
-        os.system('tar xfzv '+target+' -C '+tdir)
+        os.system('tar xfz '+target+' -C '+tdir)
         os.chdir(tdir)
         try:
-            os.system('mvn sonar:sonar -Dsonar.projectKey=JbTryout -Dsonar.host.url=http://localhost:9000 -Dsonar.login=%s' % sonar_key)
+            os.system('mvn -P!update-parent,nogui clean compile')
+            os.system('mvn sonar:sonar -Dsonar.projectKey=ProvGot -Dsonar.host.url=http://localhost:7000 -Dsonar.login=%s' % sonar_key)
         except Exception as e:
             print(e)
         os.chdir('..')
@@ -32,7 +35,7 @@ def upload_file():
         file = request.files['file']
         target = os.path.join('upload-src', file.filename)
         file.save(target)
-        analyze(file.filename)
+        Thread(target=partial(analyze, file.filename)).start()
     return '''
     <!doctype html>
     <title>Upload Source</title>
@@ -44,6 +47,4 @@ def upload_file():
     '''
 
 
-try: os.mkdir('upload-src')
-except: pass
 app.run()
