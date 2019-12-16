@@ -19,8 +19,8 @@ def analyze(target):
         os.system('tar xfz '+target+' -C '+tdir)
         os.chdir(tdir)
         try:
-            os.system('mvn -P!update-parent,nogui clean compile')
-            os.system('mvn sonar:sonar -Dsonar.projectKey=ProvGot -Dsonar.host.url=http://localhost:7000 -Dsonar.login=%s' % sonar_key)
+            # os.system('mvn -P!update-parent,nogui clean compile')
+            os.system('mvn sonar:sonar -Dsonar.projectKey=ProvGot -Dsonar.host.url=http://127.0.0.1:7000/sonar -Dsonar.login=%s' % sonar_key)
         except Exception as e:
             print(e)
         os.chdir('..')
@@ -29,7 +29,7 @@ def analyze(target):
     os.chdir('..')
 
 
-@app.route('/upload-src', methods='GET POST'.split())
+@app.route('/upload-src', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         file = request.files['file']
@@ -47,4 +47,4 @@ def upload_file():
     '''
 
 
-app.run()
+app.run(host='0.0.0.0')

@@ -1,3 +1,4 @@
 .sonar
+.*_sonarqube
 sonarqube
 upload-src/*

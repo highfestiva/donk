@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+    donk:
+      container_name: "donk"
+      image: provisioning/donk
+      restart: always
+
+    sonar:
+      container_name: "sonar"
+      image: provisioning/sonar
+      restart: always
+
+    nginx:
+      container_name: "nginx"
+      image: provisioning/nginx
+      depends_on:
+        - donk
+        - sonar
+      ports:
+        - "8000:80"
+      restart: always
